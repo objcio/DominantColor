@@ -12,14 +12,14 @@ import GLKit.GLKMath
 // calculations it doesn't matter and saves an unnecessary computation.
 
 // From http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE76.html
-func CIE76SquaredColorDifference(lab1: INVector3, lab2: INVector3) -> Float {
+func CIE76SquaredColorDifference(lab1: INVector3, _ lab2: INVector3) -> Float {
     let (L1, a1, b1) = lab1.unpack()
     let (L2, a2, b2) = lab2.unpack()
     
     return pow(L2 - L1, 2) + pow(a2 - a1, 2) + pow(b2 - b1, 2)
 }
 
-private func C(a: Float, b: Float) -> Float {
+private func C(a: Float, _ b: Float) -> Float {
     return sqrt(pow(a, 2) + pow(b, 2))
 }
 
@@ -104,11 +104,11 @@ func CIE2000SquaredColorDifference(
         }
     }()
     
-    let T = 1
-        - 0.17 * cos(GLKMathDegreesToRadians(Hbp - 30))
-        + 0.24 * cos(GLKMathDegreesToRadians(2 * Hbp))
-        + 0.32 * cos(GLKMathDegreesToRadians(3 * Hbp + 6))
-        - 0.20 * cos(GLKMathDegreesToRadians(4 * Hbp - 63))
+    var T: Float = 1
+    T -= 0.17 * cos(GLKMathDegreesToRadians(Hbp - 30))
+    T += 0.24 * cos(GLKMathDegreesToRadians(2 * Hbp))
+    T += 0.32 * cos(GLKMathDegreesToRadians(3 * Hbp + 6))
+    T -= 0.20 * cos(GLKMathDegreesToRadians(4 * Hbp - 63))
     
     let Sl = 1 + (0.015 * pow(Lbp - 50, 2)) / sqrt(20 + pow(Lbp - 50, 2))
     let Sc = 1 + 0.045 * Cbp

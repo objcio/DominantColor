@@ -29,13 +29,13 @@ struct Cluster<T : ClusteredType> {
 
 func kmeans<T : ClusteredType>(
         points: [T],
-        k: Int,
-        seed: UInt32,
-        distance: ((T, T) -> Float),
-        threshold: Float = 0.0001
+        _ k: Int,
+        _ seed: UInt32,
+        _ distance: ((T, T) -> Float),
+        _ threshold: Float = 0.0001
     ) -> [Cluster<T>] {
             
-    let n = count(points)
+    let n = points.count
     assert(k <= n, "k cannot be larger than the total number of points")
 
     var centroids = points.randomValues(seed, num: k)
@@ -45,14 +45,14 @@ func kmeans<T : ClusteredType>(
     var error: Float = 0
     var previousError: Float = 0
     
-    do {
+    repeat {
         error = 0
         var newCentroids = [T](count: k, repeatedValue: T.identity)
         var newClusterSizes = [Int](count: k, repeatedValue: 0)
         
         for i in 0..<n {
             let point = points[i]
-            let clusterIndex = findNearestCluster(point, centroids, k, distance)
+            let clusterIndex = findNearestCluster(point, centroids: centroids, k: k, distance: distance)
             if memberships[i] != clusterIndex {
                 error += 1
                 memberships[i] = clusterIndex
@@ -71,7 +71,7 @@ func kmeans<T : ClusteredType>(
         previousError = error
     } while abs(error - previousError) > threshold
     
-    return map(Zip2(centroids, clusterSizes)) { Cluster(centroid: $0, size: $1) }
+    return Zip2(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
 }
 
 private func findNearestCluster<T : ClusteredType>(point: T, centroids: [T], k: Int, distance: (T, T) -> Float) -> Int {
@@ -92,7 +92,7 @@ private func randomNumberInRange(range: Range<Int>) -> Int {
     let buckets = Int(RAND_MAX) / interval
     let limit = buckets * interval
     var r = 0
-    do {
+    repeat {
         r = Int(rand())
     } while r >= limit
     return range.startIndex + (r / buckets)
@@ -105,11 +105,11 @@ private extension Array {
         var indices = [Int]()
         indices.reserveCapacity(num)
         let range = 0..<self.count
-        for i in 0..<num {
+        for _ in 0..<num {
             var random = 0
-            do {
+            repeat {
                 random = randomNumberInRange(range)
-            } while contains(indices, random)
+            } while indices.contains(random)
             indices.append(random)
         }
 
