@@ -150,7 +150,11 @@ public func dominantColorsInImage(
     clusters.sortInPlace { $0.size > $1.size }
     
     let colors = clusters.map { RGBVectorToCGColor(IN_LABToRGB($0.centroid)) }
-    return colors.filter({ $0 != nil }) as! [CGColor]
+    var result: [CGColor] = []
+    for color in colors where color != nil {
+        result.append(color!)
+    }
+    return result
 }
 
 private func distanceForAccuracy(accuracy: GroupingAccuracy) -> (INVector3, INVector3) -> Float {
