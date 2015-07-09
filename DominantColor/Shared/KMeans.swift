@@ -71,7 +71,7 @@ func kmeans<T : ClusteredType>(
         previousError = error
     } while abs(error - previousError) > threshold
     
-    return Zip2(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
+    return Zip2Sequence(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
 }
 
 private func findNearestCluster<T : ClusteredType>(point: T, centroids: [T], k: Int, distance: (T, T) -> Float) -> Int {
@@ -99,7 +99,7 @@ private func randomNumberInRange(range: Range<Int>) -> Int {
 }
 
 private extension Array {
-    private func randomValues(seed: UInt32, num: Int) -> [T] {
+    private func randomValues(seed: UInt32, num: Int) -> [Element] {
         srand(seed)
         
         var indices = [Int]()
